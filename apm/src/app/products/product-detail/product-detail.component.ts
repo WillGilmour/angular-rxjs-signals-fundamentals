@@ -3,7 +3,7 @@ import { Component, inject, Input, OnChanges, OnDestroy, SimpleChanges } from '@
 import { NgIf, NgFor, CurrencyPipe } from '@angular/common';
 import { Product } from '../product';
 import { ProductService } from '../product.service';
-import { map, Subscription } from 'rxjs';
+import { catchError, EMPTY, map, Subscription } from 'rxjs';
 
 @Component({
     selector: 'pm-product-detail',
@@ -32,7 +32,7 @@ export class ProductDetailComponent implements OnChanges, OnDestroy{
       this.sub = this.productService.getProduct(id as number).pipe(
         map((product)=>{
           this.product = product
-        })
+        }),catchError(err => {this.errorMessage = err; return EMPTY})
       ).subscribe();
     }
   }

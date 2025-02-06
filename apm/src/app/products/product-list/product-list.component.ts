@@ -4,7 +4,7 @@ import { NgIf, NgFor, NgClass } from '@angular/common';
 import { Product } from '../product';
 import { ProductDetailComponent } from '../product-detail/product-detail.component';
 import { ProductService } from '../product.service';
-import { map, Subscription } from 'rxjs';
+import { catchError, EMPTY, map, Subscription } from 'rxjs';
 
 @Component({
     selector: 'pm-product-list',
@@ -25,20 +25,20 @@ export class ProductListComponent implements OnInit, OnDestroy{
   selectedProductId: number = 0;
 
 
+  pageTitle = 'Products';
+  errorMessage = '';
+
+
   ngOnInit(): void {
      this.productSub = this.productService.getProducts().pipe(
       map((products:Product[]) => {
       this.products = products;
-    })).subscribe()
+    }), catchError(err => {this.errorMessage = err; return EMPTY})).subscribe()
   }
 
   ngOnDestroy(): void {
     this.productSub.unsubscribe()
   }
-
-  pageTitle = 'Products';
-  errorMessage = '';
-
 
   onSelected(productId: number): void {
     this.selectedProductId = productId;
